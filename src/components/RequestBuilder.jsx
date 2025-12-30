@@ -150,7 +150,7 @@ const RequestBuilder = () => {
                             {['GET', 'POST', 'PUT', 'DELETE', 'PATCH'].map(m => <option key={m} value={m}>{m}</option>)}
                         </select>
                         <div style={{ width: '1px', height: '24px', background: 'var(--border)' }}></div>
-                        <Globe size={18} style={{ color: 'var(--text-muted)', marginLeft: '8px' }} />
+                        <Globe size={20} style={{ color: 'var(--text-muted)', marginLeft: '8px' }} />
                         <input
                             placeholder="https://api.example.com/v1/resource"
                             style={{ flex: 1, border: 'none', background: 'transparent', fontWeight: 500, fontSize: '1rem' }}
@@ -158,12 +158,12 @@ const RequestBuilder = () => {
                             onChange={(e) => setUrl(e.target.value)}
                         />
                         <button onClick={handleSend} disabled={loading} className="btn btn-primary" style={{ height: '44px', padding: '0 24px' }}>
-                            {loading ? <Loader className="animate-spin" size={20} /> : <><Send size={18} /> Execute</>}
+                            {loading ? <Loader className="animate-spin" size={20} /> : <><Send size={20} /> Execute</>}
                         </button>
                     </div>
 
                     <button className="card glass flex items-center justify-center p-0" style={{ width: '56px', height: '56px' }} onClick={resetRequest} title="Clear Environment">
-                        <Plus size={24} />
+                        <Plus size={28} />
                     </button>
 
                     <button className={`card glass flex items-center justify-center p-0 ${showHistory ? 'active' : ''}`}
@@ -171,7 +171,7 @@ const RequestBuilder = () => {
                         onClick={() => setShowHistory(!showHistory)}
                         title="Quick History"
                     >
-                        <History size={24} color={showHistory ? 'var(--primary)' : 'currentColor'} />
+                        <History size={28} color={showHistory ? 'var(--primary)' : 'currentColor'} />
                     </button>
                 </div>
 
