@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Database, Trash2, Plus, Search, Tag, Copy, Loader, Code, Globe, X, Command, Hash, ExternalLink } from 'lucide-react';
 import { toast } from 'react-toastify';
 import api from '../utils/api';
@@ -8,6 +9,11 @@ const VariableManager = () => {
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState('');
     const [newVar, setNewVar] = useState({ key: '', value: '' });
+    const navigate = useNavigate();
+
+    const onViewUsage = (key) => {
+        navigate(`/dashboard/history?search={{${key}}}`);
+    };
 
     useEffect(() => {
         fetchVariables();
@@ -186,11 +192,10 @@ const VariableManager = () => {
                                 </div>
 
                                 <div className="flex justify-between items-center mt-2">
-                                    <div className="flex -space-x-2">
-                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--primary)', border: '2px solid var(--bg-card)' }}></div>
-                                        <div style={{ width: '24px', height: '24px', borderRadius: '50%', background: 'var(--secondary)', border: '2px solid var(--bg-card)' }}></div>
+                                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>
+                                        {v.source === 'manual' ? 'Manually Registered' : 'Extracted from Response'}
                                     </div>
-                                    <button className="flex items-center gap-1" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', background: 'none' }}>
+                                    <button className="flex items-center gap-1 pointer" style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--primary)', background: 'none', cursor: 'pointer' }} onClick={() => onViewUsage(v.key)}>
                                         View Usage <ExternalLink size={12} />
                                     </button>
                                 </div>

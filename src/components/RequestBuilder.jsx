@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Send, Plus, X, Play, Loader, Save, Code, History, Zap, Search, Globe, Shield, Key, Terminal } from 'lucide-react';
+import { Send, Plus, X, Play, Loader, Save, Code, History, Zap, Search, Globe, Shield, Key, Terminal, Database, Copy } from 'lucide-react';
 import { JsonView, allExpanded, darkStyles, defaultStyles } from 'react-json-view-lite';
 import 'react-json-view-lite/dist/index.css';
 import { toast } from 'react-toastify';
@@ -18,12 +18,24 @@ const RequestBuilder = () => {
     const [loading, setLoading] = useState(false);
     const [activeTab, setActiveTab] = useState('params');
     const [showHistory, setShowHistory] = useState(false);
+    const [showVariables, setShowVariables] = useState(false);
+    const [varSearch, setVarSearch] = useState('');
     const [history, setHistory] = useState([]);
+    const [variables, setVariables] = useState([]);
     const [selectedHistory, setSelectedHistory] = useState(null);
+
+    const filteredVariables = variables.filter(v =>
+        v.key.toLowerCase().includes(varSearch.toLowerCase()) ||
+        String(v.value).toLowerCase().includes(varSearch.toLowerCase())
+    );
 
     useEffect(() => {
         if (showHistory) fetchHistory();
     }, [showHistory]);
+
+    useEffect(() => {
+        if (showVariables) fetchVariables();
+    }, [showVariables]);
 
     const fetchHistory = async () => {
         try {
@@ -31,6 +43,15 @@ const RequestBuilder = () => {
             setHistory(res.data);
         } catch (err) {
             toast.error('Failed to load history');
+        }
+    };
+
+    const fetchVariables = async () => {
+        try {
+            const res = await api.get('/variables');
+            setVariables(res.data);
+        } catch (err) {
+            toast.error('Failed to load variables');
         }
     };
 
@@ -164,6 +185,14 @@ const RequestBuilder = () => {
 
                     <button className="card glass flex items-center justify-center p-0" style={{ width: '56px', height: '56px' }} onClick={resetRequest} title="Clear Environment">
                         <Plus size={32} />
+                    </button>
+
+                    <button className={`card glass flex items-center justify-center p-0 ${showVariables ? 'active' : ''}`}
+                        style={{ width: '56px', height: '56px', border: showVariables ? '2px solid var(--primary)' : '1px solid var(--border)' }}
+                        onClick={() => setShowVariables(!showVariables)}
+                        title="Variable Catalog"
+                    >
+                        <Database size={32} color={showVariables ? 'var(--primary)' : 'currentColor'} />
                     </button>
 
                     <button className={`card glass flex items-center justify-center p-0 ${showHistory ? 'active' : ''}`}
@@ -324,6 +353,76 @@ const RequestBuilder = () => {
                                 {renderDataNodes(response.data)}
                             </div>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Variables Inventory Overlay */}
+            {showVariables && (
+                <div className="card glass flex flex-col fade-in" style={{ width: '400px', padding: '0', background: 'var(--bg-card)', zIndex: 100 }}>
+                    <div className="flex justify-between items-center px-6 py-5 border-b" style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-sidebar)' }}>
+                        <h4 style={{ fontSize: '1rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '8px' }}>
+                            <Database size={18} /> VARIABLE CATALOG
+                        </h4>
+                        <button onClick={() => setShowVariables(false)} className="btn-outline" style={{ border: 'none' }}><X size={20} /></button>
+                    </div>
+
+                    <div className="p-4" style={{ background: 'var(--bg-main)', borderBottom: '1px solid var(--border)' }}>
+                        <div className="flex items-center gap-2 card glass" style={{ padding: '8px 16px', background: 'var(--bg-card)' }}>
+                            <Search size={16} color="var(--text-muted)" />
+                            <input
+                                placeholder="Search variables..."
+                                style={{ border: 'none', background: 'transparent', flex: 1, fontSize: '0.9rem' }}
+                                value={varSearch}
+                                onChange={(e) => setVarSearch(e.target.value)}
+                            />
+                        </div>
+                    </div>
+
+                    <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
+                        {filteredVariables.length === 0 ? (
+                            <div className="text-center py-10 opacity-50">
+                                <Database size={32} className="mb-2 mx-auto" />
+                                <p style={{ fontSize: '0.9rem' }}>No variables found</p>
+                            </div>
+                        ) : (
+                            filteredVariables.map(v => (
+                                <div
+                                    key={v._id}
+                                    className="card card-hover"
+                                    style={{ padding: '16px', cursor: 'grab', background: 'var(--bg-card)' }}
+                                    draggable
+                                    onDragStart={(e) => e.dataTransfer.setData('text/plain', `{{${v.key}}}`)}
+                                >
+                                    <div className="flex justify-between items-center mb-2">
+                                        <div className="flex items-center gap-2">
+                                            <Zap size={14} style={{ color: 'var(--primary)' }} />
+                                            <span style={{ fontWeight: 800, fontSize: '0.9rem' }}>{v.key}</span>
+                                        </div>
+                                        <button
+                                            onClick={() => {
+                                                navigator.clipboard.writeText(`{{${v.key}}}`);
+                                                toast.info(`Copied {{${v.key}}}`);
+                                            }}
+                                            className="btn-outline"
+                                            style={{ padding: '4px', border: 'none' }}
+                                        >
+                                            <Copy size={14} />
+                                        </button>
+                                    </div>
+                                    <div style={{
+                                        fontSize: '0.75rem',
+                                        color: 'var(--text-muted)',
+                                        fontFamily: 'JetBrains Mono',
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap'
+                                    }}>
+                                        {String(v.value)}
+                                    </div>
+                                </div>
+                            ))
+                        )}
                     </div>
                 </div>
             )}
