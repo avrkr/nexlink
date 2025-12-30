@@ -161,10 +161,10 @@ const VariableManager = () => {
                                     </div>
                                     <div className="flex gap-1">
                                         <button onClick={() => copyToClipboard(v.key)} className="btn-outline" style={{ padding: '8px', border: 'none' }} title="Copy Reference">
-                                            <Copy size={18} style={{ color: 'var(--text-muted)' }} />
+                                            <Copy size={22} style={{ color: 'var(--text-muted)' }} />
                                         </button>
                                         <button onClick={() => deleteVariable(v._id)} className="btn-outline" style={{ padding: '8px', border: 'none', color: 'var(--error)' }} title="Delete">
-                                            <Trash2 size={18} />
+                                            <Trash2 size={22} />
                                         </button>
                                     </div>
                                 </div>

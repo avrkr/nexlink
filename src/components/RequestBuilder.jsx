@@ -163,7 +163,7 @@ const RequestBuilder = () => {
                     </div>
 
                     <button className="card glass flex items-center justify-center p-0" style={{ width: '56px', height: '56px' }} onClick={resetRequest} title="Clear Environment">
-                        <Plus size={28} />
+                        <Plus size={32} />
                     </button>
 
                     <button className={`card glass flex items-center justify-center p-0 ${showHistory ? 'active' : ''}`}
@@ -171,7 +171,7 @@ const RequestBuilder = () => {
                         onClick={() => setShowHistory(!showHistory)}
                         title="Quick History"
                     >
-                        <History size={28} color={showHistory ? 'var(--primary)' : 'currentColor'} />
+                        <History size={32} color={showHistory ? 'var(--primary)' : 'currentColor'} />
                     </button>
                 </div>
 
