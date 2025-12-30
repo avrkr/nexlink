@@ -9,6 +9,7 @@ import Logo from '../components/Logo';
 const Signup = () => {
     const [formData, setFormData] = useState({ name: '', email: '', password: '' });
     const [loading, setLoading] = useState(false);
+    const [isSent, setIsSent] = useState(false);
     const { signup } = useAuth();
     const navigate = useNavigate();
 
@@ -16,15 +17,43 @@ const Signup = () => {
         e.preventDefault();
         setLoading(true);
         try {
-            await signup(formData);
-            toast.success('Account created successfully!');
-            navigate('/dashboard');
+            const res = await signup(formData);
+            toast.success(res.data?.message || 'Verification email sent!');
+            setIsSent(true);
         } catch (err) {
             toast.error(err.response?.data?.message || 'Signup failed');
         } finally {
             setLoading(false);
         }
     };
+
+    if (isSent) {
+        return (
+            <div className="flex items-center justify-center fade-in" style={{ minHeight: '100vh', width: '100%', padding: '20px', backgroundColor: 'var(--bg-main)' }}>
+                <motion.div
+                    className="card text-center"
+                    style={{ width: '100%', maxWidth: '500px', padding: '50px' }}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                >
+                    <div style={{ width: '80px', height: '80px', borderRadius: '50%', background: 'var(--primary-glow)', display: 'flex', alignItems: 'center', justifyCenter: 'center', margin: '0 auto 30px' }}>
+                        <Mail size={40} style={{ color: 'var(--primary)' }} />
+                    </div>
+                    <h2 style={{ marginBottom: '15px', fontWeight: 800 }}>Check your email</h2>
+                    <p style={{ color: 'var(--text-muted)', marginBottom: '30px', fontSize: '1rem', lineHeight: 1.6 }}>
+                        We've sent a verification link to <strong style={{ color: 'var(--text-main)' }}>{formData.email}</strong>.
+                        Please click the link in the email to activate your account.
+                    </p>
+                    <button className="btn btn-outline w-full" onClick={() => navigate('/login')}>
+                        Back to Login
+                    </button>
+                    <p style={{ marginTop: '20px', fontSize: '0.85rem', color: 'var(--text-muted)' }}>
+                        Didn't receive it? <button style={{ background: 'none', border: 'none', color: 'var(--primary)', fontWeight: 600, cursor: 'pointer' }} onClick={handleSubmit}>Resend Email</button>
+                    </p>
+                </motion.div>
+            </div>
+        );
+    }
 
     return (
         <div className="flex items-center justify-center fade-in" style={{ minHeight: '100vh', width: '100%', padding: '20px', backgroundColor: 'var(--bg-main)' }}>

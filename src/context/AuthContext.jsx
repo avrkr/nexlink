@@ -32,9 +32,7 @@ export const AuthProvider = ({ children }) => {
 
     const signup = async (data) => {
         const res = await api.post('/auth/signup', data);
-        localStorage.setItem('token', res.data.token);
-        setUser(res.data.user);
-        return res.data;
+        return res;
     };
 
     const logout = () => {
